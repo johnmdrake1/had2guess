@@ -20,7 +20,7 @@ export default function Header({ username }) {
       <header className="sticky top-0 z-30 bg-transparent/40 backdrop-blur-md">
         <div className="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
           <Link href="/" className="text-2xl md:text-3xl font-semibold tracking-tight">
-            how<span className="text-green-400">2</span>guess
+            had<span className="text-green-400">2</span>guess
           </Link>
           <nav className="flex items-center gap-3 text-sm">
             <button onClick={() => setOpen(true)} className="hover:opacity-80">How to Play</button>

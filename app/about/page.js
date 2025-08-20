@@ -5,7 +5,7 @@ export default function About() {
     <>
       <Header />
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="text-3xl font-semibold mb-4">About how2guess</h1>
+        <h1 className="text-3xl font-semibold mb-4">About had2guess</h1>
         <div className="glass p-6 leading-relaxed">
           <p className="opacity-90">
             Put your intuition on the line. Each day you’ll face a single, verifiable

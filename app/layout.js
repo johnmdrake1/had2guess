@@ -2,7 +2,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "how2guess",
+  title: "had2guess",
   description: "A daily life-or-death guessing game. Choose wisely.",
 };
 
