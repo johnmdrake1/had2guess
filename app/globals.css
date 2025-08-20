@@ -17,7 +17,7 @@
 /* Base look */
 html, body {
   height: 100%;
-  background: radial-gradient(1200px 1200px at 50% -20%, #0b0f1a, #05070c 60%) fixed;
+  background: radial-gradient(1200px 1200px at 50% -20%, #7a11a1, #05070c 60%) fixed;
   color: #e7ebf3;
 }
 
