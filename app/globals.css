@@ -42,11 +42,15 @@ body:before {
 .button-glow::after {
   content: "";
   position: absolute;
-  inset: -200%;
-  background: radial-gradient(200px 200px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.28), transparent 60%);
+  inset: -30%;
+  /*Bigger better glow that tracks the cursor*/
+  background: radial-gradient(240px 240px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.45), transparent 60%);
   opacity: 0;
-  transition: opacity .25s ease;
+  transition: opacity .2s ease;
+  pointer-events: none;
+  /*Put the glow above button background but below text*/
   z-index: -1;
+  mix-blend-mode: screen;
 }
 .button-glow:hover::after { opacity: 1; }
 

@@ -118,7 +118,7 @@ function HoverButton({ label, color, onClick, disabled }) {
       role="button"
       aria-label={label}
     >
-      <span className="drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)]">{label}</span>
+      <span className="relative z-10 drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)]">{label}</span>
     </div>
   );
 }
