@@ -42,9 +42,9 @@ body:before {
 .button-glow::after {
   content: "";
   position: absolute;
-  inset: -30%;
+  inset: 0; /*Matches element box so cursor coords line up 1:1
   /*Bigger better glow that tracks the cursor*/
-  background: radial-gradient(240px 240px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.45), transparent 60%);
+  background: radial-gradient(260px 260px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.45), transparent 60%);
   opacity: 0;
   transition: opacity .2s ease;
   pointer-events: none;
