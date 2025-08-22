@@ -6,6 +6,7 @@ import { supabaseBrowser } from "@/lib/supabaseClient";
 export default function Admin() {
   const sb = supabaseBrowser();
   const [profile, setProfile] = useState(null);
+  const [scope, setScope] = useState("upcoming"); // "upcoming" | "recent"
   const [form, setForm] = useState({
     publish_date: "",
     prompt: "",
@@ -30,9 +31,14 @@ export default function Admin() {
     load();
   }, []);
 
+  useEffect(() => {
+    load();
+  }, [scope]);
+
   async function load() {
-    const { data } = await sb.from("public_questions").select("*").order("publish_date", { ascending: true }).limit(30);
-    setList(data || []);
+    const res = await fetch(`/api/admin/list-questions?scope=${scope}&limit=30`, { cache: "no-store" });
+    const data = await res.json();
+    setList(data?.items || []);
   }
 
   async function onUploadFile(e) {
@@ -182,7 +188,22 @@ export default function Admin() {
           </div>
         </form>
 
-        <h2 className="text-xl font-semibold mt-8 mb-3">Upcoming / Recent</h2>
+        <div className="mt-6 flex items-center gap-2">
+          <label className="opacity-80">Browse:</label>
+          <select
+            className="px-3 py-2 rounded bg-white/10 border border-white/20"
+            value={scope}
+            onChange={(e)=>setScope(e.target.value)}
+          >
+            <option value="upcoming">Upcoming</option>
+            <option value="recent">Recent</option>
+          </select>
+        </div>
+
+        <h2 className="text-xl font-semibold mt-4 mb-3">
+          {scope === "upcoming" ? "Upcoming" : "Recent"}
+        </h2>
+        
         <div className="grid gap-3">
           {list.map(q => (
             <div key={q.id} className="glass p-3">
