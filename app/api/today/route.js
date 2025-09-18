@@ -13,7 +13,7 @@ export async function GET() {
     .maybeSingle();
 
   // Check if user has already guessed
-  const sb = supabaseServer();
+  const sb = await supabaseServer();
   const {
     data: { user },
   } = await sb.auth.getUser();

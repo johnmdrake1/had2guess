@@ -2,7 +2,7 @@ import { supabaseServer, supabaseService } from "@/lib/supabaseServer";
 import { todayChicagoISO } from "@/lib/time";
 
 export async function GET(req) {
-  const sb = supabaseServer();
+  const sb = await supabaseServer();
   const {
     data: { user },
   } = await sb.auth.getUser();

@@ -1,7 +1,7 @@
 import { supabaseServer, supabaseService } from "@/lib/supabaseServer";
 
 export async function POST(req) {
-  const sb = supabaseServer();
+  const sb = await supabaseServer();
   const {
     data: { user },
   } = await sb.auth.getUser();
