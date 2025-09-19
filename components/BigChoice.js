@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import classNames from "classnames";
 
@@ -33,28 +33,19 @@ export default function BigChoice({ prompt, onPick, disabled=false, currentStrea
   }
 
   return (
-    <div className="flex flex-col min-h-screen md:h-screen">
-      <div className="mx-auto max-w-5xl px-4 w-full">
-        <div className="text-center mt-6 mb-4">
+    <div className="flex flex-col h-screen">
+      <div className="mx-auto max-w-5xl px-4 w-full pt-6 pb-4 flex-shrink-0">
+        <div className="text-center">
           <div className="text-sm opacity-70">Current streak: <span className="font-semibold">{currentStreak ?? 0}</span></div>
-          <h1 className="text-3xl md:text-5xl font-semibold mt-2 leading-tight">
-            {isLongPrompt && !showFullPrompt
-              ? `${prompt.substring(0, 100)}...`
-              : (prompt || "Loading today’s question…")
-            }
-          </h1>
-          {isLongPrompt && (
-            <button
-              onClick={() => setShowFullPrompt(!showFullPrompt)}
-              className="text-sm opacity-80 hover:opacity-100 mt-2"
-            >
-              {showFullPrompt ? "Show less" : "Show more"}
-            </button>
-          )}
+          <div className="max-h-[25vh] overflow-y-auto mt-2">
+            <h1 className="text-3xl md:text-5xl font-semibold leading-tight">
+              {prompt || "Loading today’s question…"}
+            </h1>
+          </div>
         </div>
       </div>
 
-      <div className="mt-auto grid grid-cols-1 md:grid-cols-2 grow h-full md:h-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 grow">
         <HoverButton
           label="Yes"
           color="yes"
@@ -98,13 +89,53 @@ export default function BigChoice({ prompt, onPick, disabled=false, currentStrea
 }
 
 function HoverButton({ label, color, onClick, disabled }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const mouseX = useRef(0);
-  const mouseY = useRef(0);
+  const canvasRef = useRef(null);
+  const animationFrameId = useRef(null);
+  const ripples = useRef([]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    let frameCount = 0;
+
+    const resizeCanvas = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ripples.current.forEach((ripple, index) => {
+        ripple.radius += 1.5;
+        ripple.opacity -= 0.02;
+        if (ripple.opacity <= 0) {
+          ripples.current.splice(index, 1);
+        }
+        ctx.beginPath();
+        ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2, false);
+        ctx.fillStyle = `rgba(255, 255, 255, ${ripple.opacity})`;
+        ctx.fill();
+      });
+      animationFrameId.current = requestAnimationFrame(animate);
+    };
+    animate();
+
+    return () => {
+      window.removeEventListener("resize", resizeCanvas);
+      cancelAnimationFrame(animationFrameId.current);
+    };
+  }, []);
 
   const onMove = (e) => {
-    mouseX.current = e.nativeEvent.offsetX;
-    mouseY.current = e.nativeEvent.offsetY;
+    const rect = e.target.getBoundingClientRect();
+    ripples.current.push({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+      radius: 0,
+      opacity: 0.2,
+    });
   };
 
   const classes = classNames(
@@ -117,37 +148,19 @@ function HoverButton({ label, color, onClick, disabled }) {
     disabled ? "opacity-60 pointer-events-none" : "cursor-pointer"
   );
 
-  const bg = color === "yes"
-    ? "bg-yes"
-    : "bg-no";
-
+  const bg = color === "yes" ? "bg-yes" : "bg-no";
 
   return (
-    <motion.div
+    <div
       onMouseMove={onMove}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
       onClick={onClick}
       className={`${classes} ${bg}`}
       role="button"
       aria-label={label}
     >
-      <AnimatePresence>
-        {isHovered && (
-          <motion.div
-            className="absolute inset-0 z-0"
-            style={{
-              background: `radial-gradient(circle at ${mouseX.current}px ${mouseY.current}px, rgba(255,255,255,0.25), transparent 200px)`,
-            }}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-          />
-        )}
-      </AnimatePresence>
+      <canvas ref={canvasRef} className="absolute inset-0 z-0" />
       <span className="relative z-10 drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)]">{label}</span>
-    </motion.div>
+    </div>
   );
 }
 
