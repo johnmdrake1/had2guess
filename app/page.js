@@ -47,7 +47,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main className="mx-auto max-w-6xl py-8 md:py-10 px-4">
+      <main>
         <BigChoice
           prompt={question?.prompt}
           onPick={handlePick}

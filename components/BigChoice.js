@@ -14,6 +14,9 @@ export default function BigChoice({ prompt, onPick, disabled=false, currentStrea
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [suspense, setSuspense] = useState(false);
+  const [showFullPrompt, setShowFullPrompt] = useState(false);
+
+  const isLongPrompt = prompt && prompt.length > 100;
 
   async function handle(choice) {
     if (disabled || loading) return;
@@ -30,15 +33,28 @@ export default function BigChoice({ prompt, onPick, disabled=false, currentStrea
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4">
-      <div className="text-center mt-6 mb-4">
-        <div className="text-sm opacity-70">Current streak: <span className="font-semibold">{currentStreak ?? 0}</span></div>
-        <h1 className="text-3xl md:text-5xl font-semibold mt-2 leading-tight">
-          {prompt || "Loading today’s question…"}
-        </h1>
+    <div className="flex flex-col min-h-screen md:h-screen">
+      <div className="mx-auto max-w-5xl px-4 w-full">
+        <div className="text-center mt-6 mb-4">
+          <div className="text-sm opacity-70">Current streak: <span className="font-semibold">{currentStreak ?? 0}</span></div>
+          <h1 className="text-3xl md:text-5xl font-semibold mt-2 leading-tight">
+            {isLongPrompt && !showFullPrompt
+              ? `${prompt.substring(0, 100)}...`
+              : (prompt || "Loading today’s question…")
+            }
+          </h1>
+          {isLongPrompt && (
+            <button
+              onClick={() => setShowFullPrompt(!showFullPrompt)}
+              className="text-sm opacity-80 hover:opacity-100 mt-2"
+            >
+              {showFullPrompt ? "Show less" : "Show more"}
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 min-h-[50vh]">
+      <div className="mt-auto grid grid-cols-1 md:grid-cols-2 grow h-full md:h-auto">
         <HoverButton
           label="Yes"
           color="yes"
@@ -82,44 +98,56 @@ export default function BigChoice({ prompt, onPick, disabled=false, currentStrea
 }
 
 function HoverButton({ label, color, onClick, disabled }) {
-  const ref = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const mouseX = useRef(0);
+  const mouseY = useRef(0);
 
   const onMove = (e) => {
-    const el = ref.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const mx = `${e.clientX - rect.left}px`;
-    const my = `${e.clientY - rect.top}px`;
-    el.style.setProperty("--mx", mx);
-    el.style.setProperty("--my", my);
+    mouseX.current = e.nativeEvent.offsetX;
+    mouseY.current = e.nativeEvent.offsetY;
   };
 
   const classes = classNames(
-    "button-glow button-press rounded-2xl md:rounded-3xl",
-    "h-[38vh] md:h-[50vh] w-full",
+    "button-press",
+    "h-full w-full",
     "flex items-center justify-center",
     "text-4xl md:text-6xl font-extrabold tracking-wide select-none",
     "transition-all duration-200",
-    "shadow-btn border",
+    "relative overflow-hidden",
     disabled ? "opacity-60 pointer-events-none" : "cursor-pointer"
   );
 
   const bg = color === "yes"
-    ? "bg-yes border-emerald-400 hover:brightness-110"
-    : "bg-no  border-red-400 hover:brightness-110";
+    ? "bg-yes"
+    : "bg-no";
 
 
   return (
-    <div
-      ref={ref}
+    <motion.div
       onMouseMove={onMove}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
       onClick={onClick}
       className={`${classes} ${bg}`}
       role="button"
       aria-label={label}
     >
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            className="absolute inset-0 z-0"
+            style={{
+              background: `radial-gradient(circle at ${mouseX.current}px ${mouseY.current}px, rgba(255,255,255,0.25), transparent 200px)`,
+            }}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          />
+        )}
+      </AnimatePresence>
       <span className="relative z-10 drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)]">{label}</span>
-    </div>
+    </motion.div>
   );
 }
 

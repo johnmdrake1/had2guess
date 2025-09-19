@@ -17,6 +17,8 @@
 /* Base look */
 html, body {
   height: 100%;
+}
+body {
   background: radial-gradient(1200px 1200px at 50% -20%, #7a11a1, #05070c 60%) fixed;
   color: #e7ebf3;
 }
@@ -32,27 +34,6 @@ body:before {
   background-image: url("data:image/svg+xml,%3Csvg width='240' height='240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0 0 0 0.025 0.04 0.06 0.08 0.1 0.1'/%3E%3C/feComponentTransfer%3E%3CfeBlend mode='multiply'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   opacity: .2;
 }
-
-/* Cursor glow on the giant buttons */
-.button-glow {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
-.button-glow::after {
-  content: "";
-  position: absolute;
-  inset: 0; /*Matches element box so cursor coords line up 1:1
-  /*Bigger better glow that tracks the cursor*/
-  background: radial-gradient(260px 260px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.45), transparent 60%);
-  opacity: 0;
-  transition: opacity .2s ease;
-  pointer-events: none;
-  /*Put the glow above button background but below text*/
-  z-index: -1;
-  mix-blend-mode: screen;
-}
-.button-glow:hover::after { opacity: 1; }
 
 /* Press feedback (no theme() needed in v4) */
 .button-press:active {
