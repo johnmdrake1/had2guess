@@ -33,17 +33,19 @@ export default function BigChoice({ prompt, onPick, disabled=false, currentStrea
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="mx-auto max-w-7xl px-4 w-full pt-6 pb-4">
+    <div className="flex flex-col h-screen">
+      <div className="mx-auto max-w-7xl px-4 w-full pt-6 pb-4 flex-shrink-0">
         <div className="text-center">
           <div className="text-sm opacity-70">Current streak: <span className="font-semibold">{currentStreak ?? 0}</span></div>
-          <h1 className="text-3xl md:text-5xl font-semibold leading-tight mt-2">
-            {prompt || "Loading today’s question…"}
-          </h1>
+          <div className="mt-2 md:max-h-[30vh] overflow-y-auto">
+            <h1 className="text-2xl md:text-4xl lg:text-5xl font-semibold leading-tight px-2">
+              {prompt || "Loading today's question…"}
+            </h1>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 grow">
+      <div className="grid grid-cols-1 md:grid-cols-2 flex-1 min-h-0">
         <HoverButton
           label="Yes"
           color="yes"
@@ -88,53 +90,57 @@ export default function BigChoice({ prompt, onPick, disabled=false, currentStrea
 
 function HoverButton({ label, color, onClick, disabled }) {
   const canvasRef = useRef(null);
+  const containerRef = useRef(null);
   const animationFrameId = useRef(null);
   const ripples = useRef([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
+
     const ctx = canvas.getContext("2d");
 
-    const setCanvasDimensions = () => {
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
+    const resizeCanvas = () => {
+      const rect = container.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
     };
 
-    const observer = new ResizeObserver(setCanvasDimensions);
-    observer.observe(canvas);
-    setCanvasDimensions();
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
       ripples.current.forEach((ripple, index) => {
         ripple.radius += 2;
-        ripple.opacity -= 0.01;
+        ripple.opacity -= 0.015;
         if (ripple.opacity <= 0) {
           ripples.current.splice(index, 1);
+        } else {
+          ctx.beginPath();
+          ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2, false);
+          ctx.fillStyle = `rgba(255, 255, 255, ${ripple.opacity})`;
+          ctx.fill();
         }
-        ctx.beginPath();
-        ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2, false);
-        ctx.fillStyle = `rgba(255, 255, 255, ${ripple.opacity})`;
-        ctx.fill();
       });
       animationFrameId.current = requestAnimationFrame(animate);
     };
     animate();
 
     return () => {
-      observer.disconnect();
-      cancelAnimationFrame(animationFrameId.current);
+      window.removeEventListener("resize", resizeCanvas);
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
     };
   }, []);
 
   const onMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
     ripples.current.push({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
@@ -147,7 +153,7 @@ function HoverButton({ label, color, onClick, disabled }) {
     "button-press",
     "h-full w-full",
     "flex items-center justify-center",
-    "text-4xl md:text-6xl font-extrabold tracking-wide select-none",
+    "text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-wide select-none",
     "transition-all duration-200",
     "relative overflow-hidden",
     disabled ? "opacity-60 pointer-events-none" : "cursor-pointer"
@@ -157,13 +163,18 @@ function HoverButton({ label, color, onClick, disabled }) {
 
   return (
     <div
+      ref={containerRef}
       onMouseMove={onMove}
       onClick={onClick}
       className={`${classes} ${bg}`}
       role="button"
       aria-label={label}
     >
-      <canvas ref={canvasRef} className="absolute inset-0 z-0" />
+      <canvas 
+        ref={canvasRef} 
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{ width: '100%', height: '100%' }}
+      />
       <span className="relative z-10 drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)]">{label}</span>
     </div>
   );

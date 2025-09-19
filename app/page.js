@@ -45,9 +45,9 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <>
       <Header />
-      <main className="grow">
+      <main>
         <BigChoice
           prompt={question?.prompt}
           onPick={handlePick}
@@ -58,6 +58,6 @@ export default function Home() {
           <p className="text-center mt-4 opacity-80">You’ve already played today. Come back tomorrow!</p>
         )}
       </main>
-    </div>
+    </>
   );
 }
