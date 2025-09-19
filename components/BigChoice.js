@@ -33,15 +33,13 @@ export default function BigChoice({ prompt, onPick, disabled=false, currentStrea
   }
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="mx-auto max-w-5xl px-4 w-full pt-6 pb-4 flex-shrink-0">
+    <div className="flex flex-col h-full">
+      <div className="mx-auto max-w-7xl px-4 w-full pt-6 pb-4">
         <div className="text-center">
           <div className="text-sm opacity-70">Current streak: <span className="font-semibold">{currentStreak ?? 0}</span></div>
-          <div className="max-h-[25vh] overflow-y-auto mt-2">
-            <h1 className="text-3xl md:text-5xl font-semibold leading-tight">
-              {prompt || "Loading today’s question…"}
-            </h1>
-          </div>
+          <h1 className="text-3xl md:text-5xl font-semibold leading-tight mt-2">
+            {prompt || "Loading today’s question…"}
+          </h1>
         </div>
       </div>
 
@@ -95,21 +93,28 @@ function HoverButton({ label, color, onClick, disabled }) {
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    let frameCount = 0;
 
-    const resizeCanvas = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+    const setCanvasDimensions = () => {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
     };
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
+
+    const observer = new ResizeObserver(setCanvasDimensions);
+    observer.observe(canvas);
+    setCanvasDimensions();
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
       ripples.current.forEach((ripple, index) => {
-        ripple.radius += 1.5;
-        ripple.opacity -= 0.02;
+        ripple.radius += 2;
+        ripple.opacity -= 0.01;
         if (ripple.opacity <= 0) {
           ripples.current.splice(index, 1);
         }
@@ -123,18 +128,18 @@ function HoverButton({ label, color, onClick, disabled }) {
     animate();
 
     return () => {
-      window.removeEventListener("resize", resizeCanvas);
+      observer.disconnect();
       cancelAnimationFrame(animationFrameId.current);
     };
   }, []);
 
   const onMove = (e) => {
-    const rect = e.target.getBoundingClientRect();
+    const rect = e.currentTarget.getBoundingClientRect();
     ripples.current.push({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
       radius: 0,
-      opacity: 0.2,
+      opacity: 0.3,
     });
   };
 
