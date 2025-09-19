@@ -33,19 +33,23 @@ export default function BigChoice({ prompt, onPick, disabled=false, currentStrea
   }
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="mx-auto max-w-7xl px-4 w-full pt-6 pb-4 flex-shrink-0">
-        <div className="text-center">
-          <div className="text-sm opacity-70">Current streak: <span className="font-semibold">{currentStreak ?? 0}</span></div>
-          <div className="mt-2 md:max-h-[30vh] overflow-y-auto">
-            <h1 className="text-2xl md:text-4xl lg:text-5xl font-semibold leading-tight px-2">
-              {prompt || "Loading today's question…"}
-            </h1>
+    <div className="h-screen flex flex-col">
+      {/* Header section - compact on mobile */}
+      <div className="pt-3 pb-2 md:pt-6 md:pb-4">
+        <div className="mx-auto max-w-7xl px-4 w-full">
+          <div className="text-center">
+            <div className="text-xs md:text-sm opacity-70">Current streak: <span className="font-semibold">{currentStreak ?? 0}</span></div>
+            <div className="mt-1 md:mt-2">
+              <h1 className="text-lg md:text-3xl lg:text-4xl font-semibold leading-tight px-2">
+                {prompt || "Loading today's question…"}
+              </h1>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 flex-1 min-h-0">
+      {/* Button section - fills remaining space */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2">
         <HoverButton
           label="Yes"
           color="yes"
