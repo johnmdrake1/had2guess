@@ -47,7 +47,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main className="mx-auto max-w-6xl py-8 md:py-10 px-4">
+      <main className="relative">
         <BigChoice
           prompt={question?.prompt}
           onPick={handlePick}
@@ -55,7 +55,7 @@ export default function Home() {
           currentStreak={streak}
         />
         {alreadyPlayed && (
-          <p className="text-center mt-4 opacity-80">You’ve already played today. Come back tomorrow!</p>
+          <p className="absolute top-4 left-1/2 transform -translate-x-1/2 text-center opacity-80 z-10">You've already played today. Come back tomorrow!</p>
         )}
       </main>
     </>

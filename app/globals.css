@@ -16,7 +16,7 @@
 
 /* Base look */
 html, body {
-  height: 100%;
+  height: 100vh;
   background: radial-gradient(1200px 1200px at 50% -20%, #7a11a1, #05070c 60%) fixed;
   color: #e7ebf3;
 }
@@ -33,32 +33,7 @@ body:before {
   opacity: .2;
 }
 
-/* Cursor glow on the giant buttons */
-.button-glow {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
-.button-glow::after {
-  content: "";
-  position: absolute;
-  inset: 0; /*Matches element box so cursor coords line up 1:1
-  /*Bigger better glow that tracks the cursor*/
-  background: radial-gradient(260px 260px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.45), transparent 60%);
-  opacity: 0;
-  transition: opacity .2s ease;
-  pointer-events: none;
-  /*Put the glow above button background but below text*/
-  z-index: -1;
-  mix-blend-mode: screen;
-}
-.button-glow:hover::after { opacity: 1; }
-
-/* Press feedback (no theme() needed in v4) */
-.button-press:active {
-  transform: translateY(1px) scale(0.995);
-  box-shadow: inset 0 8px 24px rgba(0,0,0,.4);
-}
+/* Canvas button styles are now handled in the component */
 
 /* Dramatic reveal overlay */
 .backdrop-fade {
