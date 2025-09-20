@@ -29,7 +29,7 @@ export default function BigChoice({ prompt, onPick, disabled=false, currentStrea
   }
 
   return (
-    <div className="px-4">
+    <div>
       <div className="text-center mt-6 mb-4">
         <div className="text-sm opacity-70">Current streak: <span className="font-semibold">{currentStreak ?? 0}</span></div>
         <h1 className="text-3xl md:text-5xl font-semibold mt-2 leading-tight">
