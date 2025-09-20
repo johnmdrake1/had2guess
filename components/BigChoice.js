@@ -37,7 +37,7 @@ export default function BigChoice({ prompt, onPick, disabled=false, currentStrea
         </h1>
       </div>
 
-      <div className="mt-8 grid grid-cols-2" style={{ height: 'calc(100vh - 200px)' }}>
+      <div className="mt-8 grid grid-cols-2" style={{ height: 'calc(100vh - 240px)' }}>
         <CanvasButton
           label="Yes"
           color="yes"

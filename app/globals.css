@@ -17,7 +17,6 @@
 /* Base look */
 html, body {
   height: 100vh;
-  overflow-x: hidden;
   background: radial-gradient(1200px 1200px at 50% -20%, #7a11a1, #05070c 60%) fixed;
   color: #e7ebf3;
 }
